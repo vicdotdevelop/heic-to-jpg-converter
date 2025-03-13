@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-HEIC to JPG Converter
-A command-line tool for macOS that converts HEIC files to JPG format.
+HEIC Image Converter
+A command-line tool for macOS that converts HEIC files to various formats.
 """
-
 import sys
 import argparse
 from converters.cli_interface import parse_args
@@ -11,7 +10,7 @@ from converters.file_handler import process_input
 from converters.logger import setup_logger, log_summary
 
 def main():
-    """Main entry point for the HEIC to JPG converter."""
+    """Main entry point for the HEIC image converter."""
     # Set up logger
     logger = setup_logger()
     
@@ -23,9 +22,11 @@ def main():
         conversion_results = process_input(
             input_path=args.input,
             output_dir=args.output,
+            output_format=args.format,
             quality=args.quality,
             preserve_metadata=not args.no_metadata,
-            logger=logger
+            logger=logger,
+            max_workers=args.threads
         )
         
         # Log summary

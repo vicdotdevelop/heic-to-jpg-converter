@@ -1,6 +1,6 @@
 """
 Image Processing Module
-Handles the conversion of HEIC files to JPG format.
+Handles the conversion of HEIC files to various formats.
 """
 
 import io
@@ -61,18 +61,19 @@ def apply_metadata(img, metadata):
     
     return img
 
-def convert_heic_to_jpg(input_path, output_path, quality=90, preserve_metadata=True):
+def convert_heic_to_format(input_path, output_path, format='JPEG', quality=90, preserve_metadata=True):
     """
-    Convert a HEIC file to JPG format.
+    Convert a HEIC file to the specified format.
     
     Args:
         input_path: Path to the input HEIC file
-        output_path: Path to save the output JPG file
-        quality: JPEG quality (1-100)
+        output_path: Path to save the output file
+        format: Output format (JPEG, PNG, WEBP)
+        quality: Output quality (1-100)
         preserve_metadata: Whether to preserve EXIF metadata
         
     Returns:
-        None
+        str: Path to the converted file
     """
     # Read the HEIC file
     heif_file = pyheif.read(input_path)
@@ -92,7 +93,30 @@ def convert_heic_to_jpg(input_path, output_path, quality=90, preserve_metadata=T
         metadata = extract_metadata(heif_file)
         image = apply_metadata(image, metadata)
     
-    # Save as JPG
-    image.save(output_path, "JPEG", quality=quality)
+    # Save with the specified format
+    if format.upper() == 'JPEG' or format.upper() == 'JPG':
+        image.save(output_path, "JPEG", quality=quality)
+    elif format.upper() == 'PNG':
+        image.save(output_path, "PNG", compress_level=int(quality/10))
+    elif format.upper() == 'WEBP':
+        image.save(output_path, "WEBP", quality=quality)
+    else:
+        raise ValueError(f"Unsupported output format: {format}")
     
     return output_path
+
+# For backwards compatibility
+def convert_heic_to_jpg(input_path, output_path, quality=90, preserve_metadata=True):
+    """
+    Convert a HEIC file to JPG format (wrapper for backward compatibility).
+    
+    Args:
+        input_path: Path to the input HEIC file
+        output_path: Path to save the output JPG file
+        quality: JPEG quality (1-100)
+        preserve_metadata: Whether to preserve EXIF metadata
+        
+    Returns:
+        str: Path to the converted JPG file
+    """
+    return convert_heic_to_format(input_path, output_path, 'JPEG', quality, preserve_metadata)

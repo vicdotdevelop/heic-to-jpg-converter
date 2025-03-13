@@ -1,21 +1,21 @@
 """
 CLI Interface Module
-Handles command-line argument parsing for the HEIC to JPG converter.
+Handles command-line argument parsing for the HEIC converter.
 """
-
 import os
 import argparse
 from pathlib import Path
+from .file_handler import SUPPORTED_FORMATS
 
 def parse_args():
     """
-    Parse command-line arguments for the HEIC to JPG converter.
+    Parse command-line arguments for the HEIC converter.
     
     Returns:
         argparse.Namespace: Parsed command-line arguments.
     """
     parser = argparse.ArgumentParser(
-        description='Convert HEIC images to JPG format.',
+        description='Convert HEIC images to various formats.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     
@@ -33,17 +33,32 @@ def parse_args():
     )
     
     parser.add_argument(
+        '--format', '-f', 
+        type=str,
+        default='jpg',
+        choices=SUPPORTED_FORMATS,
+        help=f'Output format. Options: {", ".join(SUPPORTED_FORMATS)}'
+    )
+    
+    parser.add_argument(
         '--quality', '-q', 
         type=int, 
         default=90,
         choices=range(1, 101),
-        help='JPEG quality (1-100)'
+        help='Output quality (1-100)'
     )
     
     parser.add_argument(
         '--no-metadata', 
         action='store_true',
         help='Disable metadata preservation'
+    )
+    
+    parser.add_argument(
+        '--threads', '-t',
+        type=int,
+        default=None,
+        help='Number of processing threads (default: auto)'
     )
     
     args = parser.parse_args()
